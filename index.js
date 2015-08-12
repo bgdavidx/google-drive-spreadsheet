@@ -471,6 +471,8 @@ var SpreadsheetCell = (function () {
   return SpreadsheetCell;
 })();
 
+_bluebird2['default'].promisifyAll(GoogleSpreadsheet.prototype);
+
 exports['default'] = GoogleSpreadsheet;
 module.exports = exports['default'];
 

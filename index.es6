@@ -390,4 +390,6 @@ class SpreadsheetCell {
   }
 }
 
+Promise.promisifyAll(GoogleSpreadsheet.prototype)
+
 export default GoogleSpreadsheet
