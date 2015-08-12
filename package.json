@@ -1,0 +1,36 @@
+{
+  "name": "google-drive-spreadsheet",
+  "version": "1.0.0",
+  "description": "API to access Google Drive API from Node.js",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "request": "^2.60.0",
+    "bluebird": "^2.9.34",
+    "google-auth-library": "^0.9.6",
+    "xml2js": "^0.4.10"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.22"
+  },
+  "scripts": {
+    "test": "mocha --require es6 ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bgdavidx/google-drive-spreadsheet/"
+  },
+  "keywords": [
+    "google",
+    "drive",
+    "spreadsheet",
+    "cell",
+    "row",
+    "csv",
+    "api",
+    "excel",
+    "xls"
+  ],
+  "author": "David Xu",
+  "license": "ISC"
+}
