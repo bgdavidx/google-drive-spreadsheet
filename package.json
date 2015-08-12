@@ -1,13 +1,14 @@
 {
   "name": "google-drive-spreadsheet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API to access Google Drive API from Node.js",
   "main": "index.js",
   "dependencies": {
-    "lodash": "^3.10.1",
-    "request": "^2.60.0",
+    "babel-runtime": "^5.8.20",
     "bluebird": "^2.9.34",
     "google-auth-library": "^0.9.6",
+    "lodash": "^3.10.1",
+    "request": "^2.60.0",
     "xml2js": "^0.4.10"
   },
   "devDependencies": {
