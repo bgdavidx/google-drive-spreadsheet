@@ -7,8 +7,6 @@ import Promise from 'bluebird'
 import _ from 'lodash'
 import util from 'util'
 
-Promise.promisifyAll(GoogleSpreadsheet.prototype)
-
 const creds = {
   "private_key_id": "...",
   "private_key": "...",
