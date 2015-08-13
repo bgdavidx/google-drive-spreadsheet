@@ -287,22 +287,31 @@ class GoogleSpreadsheet {
 class SpreadsheetWorksheet {
   constructor(spreadsheet, data) {
     this._spreadsheet = spreadsheet
-    this._id = data.id.substring(data.id.lastIndexOf('/') + 1)
-    this._title = data.title['_']
-    this._rowCount = data['gs:rowCount']
-    this._colCount = data['gs:colCount']
+    this.id = data.id.substring(data.id.lastIndexOf('/') + 1)
+    this.title = data.title['_']
+    this.rowCount = data['gs:rowCount']
+    this.colCount = data['gs:colCount']
   }
 
   getRows(opts, cb) {
-    return spreadsheet.getRows(this._id, opts, cb)
+    return spreadsheet.getRows(this.id, opts, cb)
   }
 
   getCells(opts, cb) {
-    return spreadsheet.getCells(this._id, opts, cb)
+    return spreadsheet.getCells(this.id, opts, cb)
   }
 
   addRow(data, cb) {
-    return spreadsheet.addRow(this._id, data, cb)
+    return spreadsheet.addRow(this.id, data, cb)
+  }
+
+  toObject() {
+    return {
+      id: this.id,
+      title: this.title,
+      rowCount: this.rowCount,
+      colCount: this.colCount
+    }
   }
 }
 
@@ -328,9 +337,9 @@ class SpreadsheetRow {
         } else if (val['_']) {
           this[key] = val['_']
         } else if (key === 'link') {
-          this._links = []
-          val = forceArray(val)
-          _.each(val, link => {
+          this._links = {}
+
+          _.each(forceArray(val), link => {
             this._links[link['$']['rel']] = link['$']['href']
           })
         }
@@ -339,9 +348,9 @@ class SpreadsheetRow {
   }
 
   save(cb) {
-    let dataXml = this._xml
-
-    dataXml = dataXml.replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended'>")
+    let dataXml = 
+        this._xml
+        .replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended'>")
 
     _.each(_.keys(this), key => {
       if (key.substr(0, 1) !== '_' && typeof(this[key]) === 'string') {
@@ -355,17 +364,29 @@ class SpreadsheetRow {
   del(cb) {
     this._spreadsheet.makeFeedRequest(this._links['edit'], 'DELETE', null, cb)
   }
+
+  toObject() {
+    const obj = {}
+
+    _.each(_.keys(this), key => {
+      if (key[0] != '_') {
+        obj[key] = this[key]
+      }
+    })
+
+    return obj
+  }
 }
 
 class SpreadsheetCell {
   constructor(spreadsheet, worksheetId, data) {
     this._spreadsheet = spreadsheet
     this._worksheetId = worksheetId
-    this._id = data['id']
-    this._row = +(data['gs:cell']['$']['row'])
-    this._col = +(data['gs:cell']['$']['col'])
-    this._value = data['gs:cell']['_']
-    this._numericValue = data['gs:cell']['$']['numericValue']
+    this.id = data['id']
+    this.row = +(data['gs:cell']['$']['row'])
+    this.col = +(data['gs:cell']['$']['col'])
+    this.value = data['gs:cell']['_']
+    this.numericValue = data['gs:cell']['$']['numericValue']
 
     this._links = _.map(forceArray(data.link), link => {
       this._links[link['$']['rel']] = link['$']['href']
@@ -373,20 +394,31 @@ class SpreadsheetCell {
   }
 
   setValue(newValue, cb) {
-    this._value = newValue
+    this.value = newValue
     this.save(cb)
   }
 
   save(cb) {
-    const newValue = xmlSafeValue(this._value)
-    const editId = `https://spreadsheets.google.com/feeds/cells/key/${this._worksheetId}/private/full/R${this._row}C${this._col}`
-    const dataXml = `<entry><id>${editId}</id><link rel="edit" type="application/atom+xml" href="${editId}"/><gs:cell row="${this._row}" col="${this._col}" inputValue="${newValue}"/></entry>`.replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>")
+    const newValue = xmlSafeValue(this.value)
+    const editId = `https://spreadsheets.google.com/feeds/cells/key/${this._worksheetId}/private/full/R${this.row}C${this.col}`
+    const dataXml = `<entry><id>${editId}</id><link rel="edit" type="application/atom+xml" href="${editId}"/><gs:cell row="${this.row}" col="${this.col}" inputValue="${newValue}"/></entry>`
+            .replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>")
 
     return this._spreadsheet.makeFeedRequest(this._links['edit'], 'PUT', dataXml, cb)
   }
 
   del(cb) {
     return this.setValue('', cb)
+  }
+
+  toObject() {
+    return {
+      id: this.id,
+      row: this.row,
+      col: this.col,
+      value: this.value,
+      numericValue: this.numericValue
+    }
   }
 }
 

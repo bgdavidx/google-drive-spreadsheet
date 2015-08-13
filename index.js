@@ -42,8 +42,8 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var GOOGLE_FEED_URL = 'https://spreadsheets.google.com/feeds/';
-var GOOGLE_AUTH_SCOPE = ['https://spreadsheets.google.com/feeds'];
+var GOOGLE_FEED_URL = "https://spreadsheets.google.com/feeds/";
+var GOOGLE_AUTH_SCOPE = ["https://spreadsheets.google.com/feeds"];
 
 var forceArray = function forceArray(val) {
   if (Array.isArray(val)) {
@@ -267,10 +267,10 @@ var GoogleSpreadsheet = (function () {
 
       var query = {};
 
-      if (opts.start) query['start-index'] = opts.start;
-      if (opts.num) query['max-results'] = opts.num;
-      if (opts.orderby) query['orderby'] = opts.orderby;
-      if (opts.reverse) query['reverse'] = opts.reverse;
+      if (opts.start) query["start-index"] = opts.start;
+      if (opts.num) query["max-results"] = opts.num;
+      if (opts.orderby) query["orderby"] = opts.orderby;
+      if (opts.reverse) query["reverse"] = opts.reverse;
       if (opts.query) query['sq'] = opts.query;
 
       return this.makeFeedRequest(['list', this._ssKey, worksheetId], 'GET', query, function (err, data, xml) {
@@ -338,26 +338,36 @@ var SpreadsheetWorksheet = (function () {
     _classCallCheck(this, SpreadsheetWorksheet);
 
     this._spreadsheet = spreadsheet;
-    this._id = data.id.substring(data.id.lastIndexOf('/') + 1);
-    this._title = data.title['_'];
-    this._rowCount = data['gs:rowCount'];
-    this._colCount = data['gs:colCount'];
+    this.id = data.id.substring(data.id.lastIndexOf('/') + 1);
+    this.title = data.title['_'];
+    this.rowCount = data['gs:rowCount'];
+    this.colCount = data['gs:colCount'];
   }
 
   _createClass(SpreadsheetWorksheet, [{
     key: 'getRows',
     value: function getRows(opts, cb) {
-      return spreadsheet.getRows(this._id, opts, cb);
+      return spreadsheet.getRows(this.id, opts, cb);
     }
   }, {
     key: 'getCells',
     value: function getCells(opts, cb) {
-      return spreadsheet.getCells(this._id, opts, cb);
+      return spreadsheet.getCells(this.id, opts, cb);
     }
   }, {
     key: 'addRow',
     value: function addRow(data, cb) {
-      return spreadsheet.addRow(this._id, data, cb);
+      return spreadsheet.addRow(this.id, data, cb);
+    }
+  }, {
+    key: 'toObject',
+    value: function toObject() {
+      return {
+        id: this.id,
+        title: this.title,
+        rowCount: this.rowCount,
+        colCount: this.colCount
+      };
     }
   }]);
 
@@ -390,9 +400,9 @@ var SpreadsheetRow = (function () {
         } else if (val['_']) {
           _this6[key] = val['_'];
         } else if (key === 'link') {
-          _this6._links = [];
-          val = forceArray(val);
-          _lodash2['default'].each(val, function (link) {
+          _this6._links = {};
+
+          _lodash2['default'].each(forceArray(val), function (link) {
             _this6._links[link['$']['rel']] = link['$']['href'];
           });
         }
@@ -405,13 +415,11 @@ var SpreadsheetRow = (function () {
     value: function save(cb) {
       var _this7 = this;
 
-      var dataXml = this._xml;
-
-      dataXml = dataXml.replace('<entry>', '<entry xmlns=\'http://www.w3.org/2005/Atom\' xmlns:gsx=\'http://schemas.google.com/spreadsheets/2006/extended\'>');
+      var dataXml = this._xml.replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended'>");
 
       _lodash2['default'].each(_lodash2['default'].keys(this), function (key) {
         if (key.substr(0, 1) !== '_' && typeof _this7[key] === 'string') {
-          dataXml = dataXml.replace(new RegExp('<gsx:' + xmlSafeColumnName(key) + '>([\\s\\S]*?)</gsx:' + xmlSafeColumnName(key) + '>'), '<gsx:' + xmlSafeColumnName(key) + '>' + xmlSafeValue(_this7[key]) + '</gsx:' + xmlSafeColumnName(key) + '>');
+          dataXml = dataXml.replace(new RegExp('<gsx:' + xmlSafeColumnName(key) + ">([\\s\\S]*?)</gsx:" + xmlSafeColumnName(key) + '>'), '<gsx:' + xmlSafeColumnName(key) + '>' + xmlSafeValue(_this7[key]) + '</gsx:' + xmlSafeColumnName(key) + '>');
         }
       });
 
@@ -422,6 +430,21 @@ var SpreadsheetRow = (function () {
     value: function del(cb) {
       this._spreadsheet.makeFeedRequest(this._links['edit'], 'DELETE', null, cb);
     }
+  }, {
+    key: 'toObject',
+    value: function toObject() {
+      var _this8 = this;
+
+      var obj = {};
+
+      _lodash2['default'].each(_lodash2['default'].keys(this), function (key) {
+        if (key[0] != '_') {
+          obj[key] = _this8[key];
+        }
+      });
+
+      return obj;
+    }
   }]);
 
   return SpreadsheetRow;
@@ -429,35 +452,35 @@ var SpreadsheetRow = (function () {
 
 var SpreadsheetCell = (function () {
   function SpreadsheetCell(spreadsheet, worksheetId, data) {
-    var _this8 = this;
+    var _this9 = this;
 
     _classCallCheck(this, SpreadsheetCell);
 
     this._spreadsheet = spreadsheet;
     this._worksheetId = worksheetId;
-    this._id = data['id'];
-    this._row = +data['gs:cell']['$']['row'];
-    this._col = +data['gs:cell']['$']['col'];
-    this._value = data['gs:cell']['_'];
-    this._numericValue = data['gs:cell']['$']['numericValue'];
+    this.id = data['id'];
+    this.row = +data['gs:cell']['$']['row'];
+    this.col = +data['gs:cell']['$']['col'];
+    this.value = data['gs:cell']['_'];
+    this.numericValue = data['gs:cell']['$']['numericValue'];
 
     this._links = _lodash2['default'].map(forceArray(data.link), function (link) {
-      _this8._links[link['$']['rel']] = link['$']['href'];
+      _this9._links[link['$']['rel']] = link['$']['href'];
     });
   }
 
   _createClass(SpreadsheetCell, [{
     key: 'setValue',
     value: function setValue(newValue, cb) {
-      this._value = newValue;
+      this.value = newValue;
       this.save(cb);
     }
   }, {
     key: 'save',
     value: function save(cb) {
-      var newValue = xmlSafeValue(this._value);
-      var editId = 'https://spreadsheets.google.com/feeds/cells/key/' + this._worksheetId + '/private/full/R' + this._row + 'C' + this._col;
-      var dataXml = ('<entry><id>' + editId + '</id><link rel="edit" type="application/atom+xml" href="' + editId + '"/><gs:cell row="' + this._row + '" col="' + this._col + '" inputValue="' + newValue + '"/></entry>').replace('<entry>', '<entry xmlns=\'http://www.w3.org/2005/Atom\' xmlns:gs=\'http://schemas.google.com/spreadsheets/2006\'>');
+      var newValue = xmlSafeValue(this.value);
+      var editId = 'https://spreadsheets.google.com/feeds/cells/key/' + this._worksheetId + '/private/full/R' + this.row + 'C' + this.col;
+      var dataXml = ('<entry><id>' + editId + '</id><link rel="edit" type="application/atom+xml" href="' + editId + '"/><gs:cell row="' + this.row + '" col="' + this.col + '" inputValue="' + newValue + '"/></entry>').replace('<entry>', "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>");
 
       return this._spreadsheet.makeFeedRequest(this._links['edit'], 'PUT', dataXml, cb);
     }
@@ -465,6 +488,17 @@ var SpreadsheetCell = (function () {
     key: 'del',
     value: function del(cb) {
       return this.setValue('', cb);
+    }
+  }, {
+    key: 'toObject',
+    value: function toObject() {
+      return {
+        id: this.id,
+        row: this.row,
+        col: this.col,
+        value: this.value,
+        numericValue: this.numericValue
+      };
     }
   }]);
 
