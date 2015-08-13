@@ -60,6 +60,8 @@ new Spreadsheet(SPREADSHEET_ID).getRows(1, function(err, rows) {
 **Note: Promisified versions also available, omit callback and add async, for example `getRows(worksheetId, options, callback)` -> `getRowsAsync(worksheetId, options)`**
 
 
+#### class: Spreadsheet
+
 ##### Spreadsheet.prototype.getRows(worksheetId, options, callback) => 
 
 returns an array of SpreadsheetRow from the given worksheetId.
@@ -81,8 +83,6 @@ example return:
 ]
 ```
 
-#### class: Spreadsheet
-
 ##### Spreadsheet.prototype.getInfo(callback) =>
 
 returns info for each worksheet in the spreadsheet.
@@ -90,10 +90,6 @@ returns info for each worksheet in the spreadsheet.
 ##### Spreadsheet.prototype.addRow(worksheetId, data, callback) =>
 
 adds a row to the worksheet with the given worksheetId.
-
-##### Spreadsheet.prototype.getRows(worksheetId, options, callback) =>
-
-returns rows (instances of SpreadsheetRow) from the spreadsheet.
 
 ##### Spreadsheet.prototype.getCells(worksheetId, options, callback) =>
 
