@@ -91,19 +91,23 @@ returns info for each worksheet in the spreadsheet.
 
 adds a row to the worksheet with the given worksheetId.
 
+##### Spreadsheet.prototype.getRows(worksheetId, options, callback) =>
+
+returns rows (instances of SpreadsheetRow) from the spreadsheet.
+
 ##### Spreadsheet.prototype.getCells(worksheetId, options, callback) =>
 
-returns cells from the spreadsheet.
+returns cells (instances of SpreadsheetCell) from the spreadsheet.
 
 #### class: SpreadsheetWorksheet
 
 ##### SpreadsheetWorksheet.prototype.getRows(options, callback) =>
 
-returns rows from the spreadsheet
+returns rows (instances of SpreadsheetRow) from the spreadsheet
 
 ##### SpreadsheetWorksheet.prototype.getCells(options, callback) =>
 
-returns rows from the worksheet.
+returns cells (instances of SpreadsheetCell) from the worksheet.
 
 ##### SpreadsheetWorksheet.prototype.addRow(data, callback) =>
 
