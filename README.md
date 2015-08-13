@@ -81,6 +81,8 @@ example return:
 ]
 ```
 
+#### class: Spreadsheet
+
 ##### Spreadsheet.prototype.getInfo(callback) =>
 
 returns info for each worksheet in the spreadsheet.
@@ -92,6 +94,8 @@ adds a row to the worksheet with the given worksheetId.
 ##### Spreadsheet.prototype.getCells(worksheetId, options, callback) =>
 
 returns cells from the spreadsheet.
+
+#### class: SpreadsheetWorksheet
 
 ##### SpreadsheetWorksheet.prototype.getRows(options, callback) =>
 
@@ -105,22 +109,38 @@ returns rows from the worksheet.
 
 adds a row to the worksheet.
 
-##### SpreadsheetRow.save(callback) =>
+##### SpreadsheetWorksheet.prototype.toObject() =>
+
+returns the worksheet converted to a plain Javascript object.
+
+#### class: SpreadsheetRow
+
+##### SpreadsheetRow.prototype.save(callback) =>
 
 saves the modified spreadsheet row to the cloud.
 
-##### SpreadsheetRow.del(callback) =>
+##### SpreadsheetRow.prototype.del(callback) =>
 
 deletes the row from the cloud.
 
-##### SpreadsheetCell.setValue(newValue, callback) =>
+##### SpreadsheetRow.prototype.toObject() =>
+
+returns the row converted to a plain Javascript object.
+
+#### class: SpreadsheetCell
+
+##### SpreadsheetCell.prototype.setValue(newValue, callback) =>
 
 updates the value of the cell in the cloud.
 
-##### SpreadsheetCell.save(callback) =>
+##### SpreadsheetCell.prototype.save(callback) =>
 
 saves the cell to the cloud.
 
-##### SpreadsheetCell.del(callback) =>
+##### SpreadsheetCell.prototype.del(callback) =>
 
 deletes the cell from the cloud.
+
+##### SpreadsheetCell.prototype.toObject() =>
+
+returns the cell converted to a plain Javascript object.
